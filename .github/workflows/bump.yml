@@ -1,0 +1,60 @@
+name: Bump formulas
+
+# Reads the latest public release of every tool in tools.json and opens (or updates) one pull request
+# per formula. Only GITHUB_TOKEN is used: no secret, no other repository is written. Pull requests
+# opened with GITHUB_TOKEN do not trigger workflows, so run "Check formulas" by hand on the branch.
+# Needs Settings > Actions > General > "Allow GitHub Actions to create and approve pull requests".
+on:
+  schedule:
+    - cron: "17 5 * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: bump
+  cancel-in-progress: false
+
+jobs:
+  bump:
+    name: Bump
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GITHUB_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+          persist-credentials: true # zizmor: ignore[artipacked] the job pushes the bump branch with this token
+      - name: Bump each formula
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # Names come from tools.json and are validated by the script (lower-case, digits, hyphen).
+          for name in $(python3 -I scripts/bump.py --names); do
+            git checkout -q --detach origin/main
+            read -r _ version status < <(python3 -I scripts/bump.py --tool "$name")
+            if [ "$status" != "written" ]; then
+              echo "$name: $status ($version)"
+              continue
+            fi
+            branch="bump/$name"
+            title="chore(formula): bump $name to $version"
+            git checkout -q -B "$branch"
+            git add "Formula/$name.rb"
+            git commit -q -m "$title"
+            git push -q --force origin "$branch"
+            body="Automated bump of \`$name\` to $version from the latest release. The formula pins the sha256 of each archive from the release's checksums file. Run the Check formulas workflow on this branch before merging."
+            number="$(gh pr list --head "$branch" --state open --json number --jq '.[0].number // empty')"
+            if [ -n "$number" ]; then
+              gh pr edit "$number" --title "$title" --body "$body"
+            else
+              gh pr create --base main --head "$branch" --title "$title" --body "$body"
+            fi
+          done
