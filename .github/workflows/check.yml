@@ -1,0 +1,52 @@
+name: Check formulas
+
+# Run by hand (workflow_dispatch, choose the bump branch) because pull requests opened with
+# GITHUB_TOKEN do not trigger workflows, and on every push to main that touches a formula.
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ["Formula/**", ".github/workflows/check.yml"]
+
+permissions: {}
+
+jobs:
+  check:
+    name: brew ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, ubuntu-latest]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Find brew
+        run: |
+          for p in /opt/homebrew/bin /usr/local/bin /home/linuxbrew/.linuxbrew/bin; do
+            if [ -x "$p/brew" ]; then echo "$p" >> "$GITHUB_PATH"; fi
+          done
+      - name: Audit, install and test every formula
+        env:
+          HOMEBREW_NO_AUTO_UPDATE: "1"
+          HOMEBREW_NO_INSTALL_FROM_API: "1"
+          HOMEBREW_NO_ANALYTICS: "1"
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          formulas=(Formula/*.rb)
+          if [ "${#formulas[@]}" -eq 0 ]; then
+            echo "No formula yet (no release with binaries): nothing to check."
+            exit 0
+          fi
+          brew tap pkalin/tap "$GITHUB_WORKSPACE"
+          for f in "${formulas[@]}"; do
+            name="$(basename "$f" .rb)"
+            brew audit --strict --online "pkalin/tap/$name"
+            brew install "pkalin/tap/$name"
+            brew test "pkalin/tap/$name"
+          done

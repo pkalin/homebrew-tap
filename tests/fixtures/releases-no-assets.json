@@ -1,0 +1,30 @@
+[
+  {
+    "tag_name": "v0.2.0",
+    "prerelease": false,
+    "draft": false,
+    "assets": []
+  },
+  {
+    "tag_name": "v0.4.0-rc.1",
+    "prerelease": true,
+    "draft": false,
+    "assets": [
+      {
+        "name": "kubectl-shadewright_0.3.0_darwin_amd64.tar.gz"
+      },
+      {
+        "name": "kubectl-shadewright_0.3.0_darwin_arm64.tar.gz"
+      },
+      {
+        "name": "kubectl-shadewright_0.3.0_linux_amd64.tar.gz"
+      },
+      {
+        "name": "kubectl-shadewright_0.3.0_linux_arm64.tar.gz"
+      },
+      {
+        "name": "checksums.txt"
+      }
+    ]
+  }
+]
