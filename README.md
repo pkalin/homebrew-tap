@@ -10,6 +10,7 @@ A [Homebrew](https://brew.sh) tap for the command line tools of [pkalin](https:/
 
 ```bash
 brew tap pkalin/tap
+brew trust pkalin/tap   # recent Homebrew loads formulas from a third-party tap only once it is trusted
 brew install pkalin/tap/kubectl-shadewright
 kubectl shadewright version
 ```

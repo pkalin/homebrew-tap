@@ -44,6 +44,8 @@ jobs:
             exit 0
           fi
           brew tap pkalin/tap "$GITHUB_WORKSPACE"
+          # Homebrew refuses formulas from a third-party tap until it is trusted; this checkout is that tap.
+          brew trust pkalin/tap
           for f in "${formulas[@]}"; do
             name="$(basename "$f" .rb)"
             brew audit --strict --online "pkalin/tap/$name"
