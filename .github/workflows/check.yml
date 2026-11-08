@@ -1,7 +1,7 @@
 name: Check formulas
 
-# Run by hand (workflow_dispatch, choose the bump branch) because pull requests opened with
-# GITHUB_TOKEN do not trigger workflows, and on every push to main that touches a formula.
+# Started by bump.yml on its branch (workflow_dispatch, because pull requests opened with GITHUB_TOKEN
+# do not trigger workflows), by hand on any branch, and on every push to main that touches a formula.
 on:
   workflow_dispatch:
   push:
@@ -44,6 +44,8 @@ jobs:
             exit 0
           fi
           brew tap pkalin/tap "$GITHUB_WORKSPACE"
+          # Homebrew refuses formulas from a third-party tap until it is trusted; this checkout is that tap.
+          brew trust pkalin/tap
           for f in "${formulas[@]}"; do
             name="$(basename "$f" .rb)"
             brew audit --strict --online "pkalin/tap/$name"
