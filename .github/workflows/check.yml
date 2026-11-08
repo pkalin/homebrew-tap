@@ -1,7 +1,7 @@
 name: Check formulas
 
-# Run by hand (workflow_dispatch, choose the bump branch) because pull requests opened with
-# GITHUB_TOKEN do not trigger workflows, and on every push to main that touches a formula.
+# Started by bump.yml on its branch (workflow_dispatch, because pull requests opened with GITHUB_TOKEN
+# do not trigger workflows), by hand on any branch, and on every push to main that touches a formula.
 on:
   workflow_dispatch:
   push:

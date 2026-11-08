@@ -2,7 +2,9 @@ name: Bump formulas
 
 # Reads the latest public release of every tool in tools.json and opens (or updates) one pull request
 # per formula. Only GITHUB_TOKEN is used: no secret, no other repository is written. Pull requests
-# opened with GITHUB_TOKEN do not trigger workflows, so run "Check formulas" by hand on the branch.
+# opened with GITHUB_TOKEN do not trigger workflows, so this job starts "Check formulas" on the branch
+# (workflow_dispatch is the exception GITHUB_TOKEN may trigger) and assigns the pull request to the owner,
+# so it shows on the owner's pull request list.
 # Needs Settings > Actions > General > "Allow GitHub Actions to create and approve pull requests".
 on:
   schedule:
@@ -21,11 +23,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
+      actions: write # starts check.yml on the bump branch
       contents: write
       pull-requests: write
     env:
       GH_TOKEN: ${{ github.token }}
       GITHUB_TOKEN: ${{ github.token }}
+      OWNER: ${{ github.repository_owner }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -50,11 +54,12 @@ jobs:
             git add "Formula/$name.rb"
             git commit -q -m "$title"
             git push -q --force origin "$branch"
-            body="Automated bump of \`$name\` to $version from the latest release. The formula pins the sha256 of each archive from the release's checksums file. Run the Check formulas workflow on this branch before merging."
+            body="Automated bump of \`$name\` to $version from the latest release. The formula pins the sha256 of each archive from the release's checksums file. The Check formulas workflow runs on this branch; merge when it passes."
             number="$(gh pr list --head "$branch" --state open --json number --jq '.[0].number // empty')"
             if [ -n "$number" ]; then
-              gh pr edit "$number" --title "$title" --body "$body"
+              gh pr edit "$number" --title "$title" --body "$body" --add-assignee "$OWNER"
             else
-              gh pr create --base main --head "$branch" --title "$title" --body "$body"
+              gh pr create --base main --head "$branch" --title "$title" --body "$body" --assignee "$OWNER"
             fi
+            gh workflow run check.yml --ref "$branch"
           done

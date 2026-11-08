@@ -32,7 +32,7 @@ gh attestation verify <archive> --repo pkalin/shadewright
 
 The `Bump formulas` workflow runs daily and on demand, with `GITHUB_TOKEN` only (no secret, no access to other repositories), and opens or updates one pull request per formula on the branch `bump/<name>`. The repository setting "Allow GitHub Actions to create and approve pull requests" must be on.
 
-Pull requests created with `GITHUB_TOKEN` do not trigger other workflows. So run `Check formulas` (workflow_dispatch, on the bump branch) before merging: on macOS and Linux runners it taps the repository, runs `brew audit --strict --online`, installs from the formula and runs `brew test`. The same workflow runs on every push to `main` that touches a formula.
+Pull requests created with `GITHUB_TOKEN` do not trigger other workflows, so the bump job starts `Check formulas` on its branch itself (workflow_dispatch) and assigns the pull request to the repository owner. Merge when it passes: on macOS and Linux runners it taps the repository, runs `brew audit --strict --online`, installs from the formula and runs `brew test`. The same workflow runs on every push to `main` that touches a formula.
 
 ## Adding a CLI
 
