@@ -9,7 +9,7 @@
       "platforms": ["darwin/amd64", "darwin/arm64", "linux/amd64", "linux/arm64"],
       "binary": "kubectl-shadewright",
       "test_args": ["version"],
-      "description": "kubectl plugin for the Shadewright Kubernetes operations agent",
+      "description": "Command-line plugin for the Shadewright Kubernetes operations agent",
       "homepage": "https://shadewright.io",
       "license": "Apache-2.0"
     }
