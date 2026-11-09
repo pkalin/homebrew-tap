@@ -9,14 +9,14 @@ A general Homebrew tap (`brew tap pkalin/tap`) for the maintainer's command line
 - `scripts/bump.py`: Python 3 standard library only. Reads the latest non-pre-release through the public GitHub API, downloads the checksums file, renders `Formula/<name>.rb`. Prints `<name> <version|-> <written|unchanged|none>`.
 - `Formula/`: generated formulas. Absent until a release with binaries exists. Do not edit by hand.
 - `tests/`: offline tests with fixtures (`tests/fixtures/`); no network.
-- `.github/workflows/`: `bump.yml` (daily and manual, opens one PR per formula), `check.yml` (brew audit, install, test; manual and on push to `main`), `test.yml` (script tests), `pr-title.yml`.
+- `.github/workflows/`: `bump.yml` (daily and manual, opens one PR per formula), `check.yml` (brew audit, install, test; manual and on push to `main`), `test.yml` (script tests), `pr-title.yml` (on pull requests, and started by `bump.yml` on its branch through `scripts/pr_title.py`).
 
 ## Rules
 
 - `main` is protected: changes only through pull requests. Never push to `main`, never change repository settings or rulesets.
 - Never execute downloaded content. Release assets and `checksums.txt` are data: validate versions (`^[0-9]+\.[0-9]+\.[0-9]+$`) and digests (64 lower-case hex) before use, and build URLs from validated parts only.
 - Formulas pin sha256 of every archive. Signatures and provenance (`gh attestation verify`) are documented in each tool's repository; do not claim the formula verifies more than sha256.
-- Workflows: `permissions: {}` at the top, the minimum per job, only `GITHUB_TOKEN` (no secrets, no PAT), actions pinned by full commit SHA with the version in a comment, no untrusted input (release names, tags, PR text) interpolated into shell. Pull requests opened with `GITHUB_TOKEN` do not trigger workflows, hence the manual `check.yml`.
+- Workflows: `permissions: {}` at the top, the minimum per job, only `GITHUB_TOKEN` (no secrets, no PAT), actions pinned by full commit SHA with the version in a comment, no untrusted input (release names, tags, PR text) interpolated into shell. Pull requests opened with `GITHUB_TOKEN` do not trigger workflows, hence `bump.yml` starts `check.yml` and `pr-title.yml` by hand.
 - Adding a tool means a `tools.json` entry; do not write a formula by hand or add per-tool code paths to the script.
 - Everything committed is public and in English. No emails, local paths, personal IDs or secrets.
 

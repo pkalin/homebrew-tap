@@ -2,8 +2,8 @@ name: Bump formulas
 
 # Reads the latest public release of every tool in tools.json and opens (or updates) one pull request
 # per formula. Only GITHUB_TOKEN is used: no secret, no other repository is written. Pull requests
-# opened with GITHUB_TOKEN do not trigger workflows, so this job starts "Check formulas" on the branch
-# (workflow_dispatch is the exception GITHUB_TOKEN may trigger) and assigns the pull request to the owner,
+# opened with GITHUB_TOKEN do not trigger workflows, so this job starts "Check formulas" and "PR title"
+# on the branch (workflow_dispatch is the exception GITHUB_TOKEN may trigger) and assigns the pull request to the owner,
 # so it shows on the owner's pull request list.
 # Needs Settings > Actions > General > "Allow GitHub Actions to create and approve pull requests".
 on:
@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
-      actions: write # starts check.yml on the bump branch
+      actions: write # starts check.yml and pr-title.yml on the bump branch
       contents: write
       pull-requests: write
     env:
@@ -62,4 +62,5 @@ jobs:
               gh pr create --base main --head "$branch" --title "$title" --body "$body" --assignee "$OWNER"
             fi
             gh workflow run check.yml --ref "$branch"
+            gh workflow run pr-title.yml --ref "$branch"
           done
