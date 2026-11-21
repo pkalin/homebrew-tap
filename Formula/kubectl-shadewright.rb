@@ -6,23 +6,23 @@ class KubectlShadewright < Formula
 
   on_macos do
     on_arm do
-      url "https://github.com/pkalin/shadewright/releases/download/v0.3.1/kubectl-shadewright_0.3.1_darwin_arm64.tar.gz"
-      sha256 "2741882be442a0861535b8bf331b7f705de571a8aba4350b49da9b86c68cd09d"
+      url "https://github.com/pkalin/shadewright/releases/download/v0.5.2/kubectl-shadewright_0.5.2_darwin_arm64.tar.gz"
+      sha256 "31cf7bde4c57dc5ffdb08403ee9e414bc8725132df441355db0b7ad2ee8eabac"
     end
     on_intel do
-      url "https://github.com/pkalin/shadewright/releases/download/v0.3.1/kubectl-shadewright_0.3.1_darwin_amd64.tar.gz"
-      sha256 "2f98e2b4347450820b5f6c146a9bbf9ea2b23425b7cfbe6dd8b5634805127081"
+      url "https://github.com/pkalin/shadewright/releases/download/v0.5.2/kubectl-shadewright_0.5.2_darwin_amd64.tar.gz"
+      sha256 "70bfe8c9c98d5eac9e524d4ab8eb38869f547f51e37e50e299bcf6d1e6049e9a"
     end
   end
 
   on_linux do
     on_arm do
-      url "https://github.com/pkalin/shadewright/releases/download/v0.3.1/kubectl-shadewright_0.3.1_linux_arm64.tar.gz"
-      sha256 "197fd90ad1175f9da6fb611759072bbcb9ba87f92bfff47be635ef7525a3673d"
+      url "https://github.com/pkalin/shadewright/releases/download/v0.5.2/kubectl-shadewright_0.5.2_linux_arm64.tar.gz"
+      sha256 "b0a2e146bc4c72c6bc3acc114c4416ffcf726711e658a9925e87332ac9870c20"
     end
     on_intel do
-      url "https://github.com/pkalin/shadewright/releases/download/v0.3.1/kubectl-shadewright_0.3.1_linux_amd64.tar.gz"
-      sha256 "be1bf786b2d6d40f34c739d52e00319aaa8d956e263fe88e16ac797d6b848a60"
+      url "https://github.com/pkalin/shadewright/releases/download/v0.5.2/kubectl-shadewright_0.5.2_linux_amd64.tar.gz"
+      sha256 "c8061d865f99df8c0e82563d69a45d806ed89cfa2052e4184dcc147750d80b01"
     end
   end
 
